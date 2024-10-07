@@ -29,6 +29,6 @@ public class Film {
     private static final LocalDate MIN_RELEASE_DATE = LocalDate.of(1895, Month.DECEMBER, 28);
 
     public static boolean isCorrectReleaseDate(LocalDate releaseDate) {
-        return releaseDate.isAfter(MIN_RELEASE_DATE);
+        return releaseDate.isAfter(MIN_RELEASE_DATE) || releaseDate.equals(MIN_RELEASE_DATE);
     }
 }
