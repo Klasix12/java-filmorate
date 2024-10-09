@@ -1,20 +1,18 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.validation.groups.OnCreate;
 import ru.yandex.practicum.filmorate.validation.groups.OnUpdate;
 
-import static ru.yandex.practicum.filmorate.validation.Validation.isEmptyString;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import static ru.yandex.practicum.filmorate.validation.Validation.isEmptyString;
 
 @RestController
 @RequestMapping("/users")

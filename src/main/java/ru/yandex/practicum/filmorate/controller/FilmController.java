@@ -9,11 +9,11 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.validation.groups.OnCreate;
 import ru.yandex.practicum.filmorate.validation.groups.OnUpdate;
 
-import static ru.yandex.practicum.filmorate.validation.Validation.isEmptyString;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import static ru.yandex.practicum.filmorate.validation.Validation.isEmptyString;
 
 @RestController
 @RequestMapping("/films")

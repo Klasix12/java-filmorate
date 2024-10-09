@@ -1,6 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.validation.groups.OnCreate;
@@ -17,7 +20,8 @@ public class User {
     @Email(message = "Неверный формат email", groups = OnCreate.class)
     private String email;
 
-    @Pattern(message = "Неверный формат логина", regexp = "^\\S*$", groups = {OnCreate.class, OnUpdate.class}) // строка, состоящая только из непробельных символов
+    @Pattern(message = "Неверный формат логина", regexp = "^\\S*$", groups = {OnCreate.class, OnUpdate.class})
+    // строка, состоящая только из непробельных символов
     private String login;
 
     private String name;
