@@ -1,10 +1,10 @@
 package ru.yandex.practicum.filmorate.model;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.validation.groups.OnCreate;
+import ru.yandex.practicum.filmorate.validation.groups.OnUpdate;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -13,18 +13,19 @@ import java.time.Month;
 @Builder
 public class Film {
 
+    @NotNull(message = "", groups = {OnUpdate.class})
     private Long id;
 
-    @NotBlank(message = "Имя не должно быть пустым")
+    @NotBlank(message = "Имя не должно быть пустым", groups = {OnCreate.class})
     private String name;
 
-    @Size(max = 200, message = "Максимальная длина описания фильма 200 символов")
+    @Size(max = 200, message = "Максимальная длина описания фильма 200 символов", groups = {OnCreate.class})
     private String description;
 
     private LocalDate releaseDate;
 
-    @Positive(message = "Продолжительность должна быть положительным числом")
-    private int duration;
+    @PositiveOrZero(message = "Продолжительность должна быть положительным числом", groups = {OnCreate.class})
+    private Integer duration;
 
     private static final LocalDate MIN_RELEASE_DATE = LocalDate.of(1895, Month.DECEMBER, 28);
 

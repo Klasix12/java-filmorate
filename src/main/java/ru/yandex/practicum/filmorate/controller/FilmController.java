@@ -1,11 +1,15 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.validation.groups.OnCreate;
+import ru.yandex.practicum.filmorate.validation.groups.OnUpdate;
+
+import static ru.yandex.practicum.filmorate.validation.Validation.isEmptyString;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,7 +29,7 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film create(@Valid @RequestBody Film film) {
+    public Film create(@Validated(OnCreate.class) @RequestBody Film film) {
         log.trace("Создание фильма");
         if (Film.isCorrectReleaseDate(film.getReleaseDate())) {
             film.setId(getNextId());
@@ -38,12 +42,8 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody Film newFilm) {
+    public Film update(@Validated(OnUpdate.class) @RequestBody Film newFilm) {
         log.trace("Обновление фильма");
-        if (newFilm.getId() == null) {
-            log.error("Обновление фильма без id");
-            throw new ValidationException("Id должен быть указан");
-        }
         if (!Film.isCorrectReleaseDate(newFilm.getReleaseDate())) {
             log.error("Некорректная дата выпуска фильма");
             throw new ValidationException("Фильм не может быть выпушен раньше 28 декабря 1895");
@@ -52,10 +52,10 @@ public class FilmController {
             Film oldFilm = films.get(newFilm.getId());
             oldFilm = Film.builder()
                     .id(oldFilm.getId())
-                    .name(newFilm.getName())
-                    .description(newFilm.getDescription())
-                    .duration(newFilm.getDuration())
-                    .releaseDate(newFilm.getReleaseDate())
+                    .name(isEmptyString(newFilm.getName()) ? oldFilm.getName() : newFilm.getName())
+                    .description(isEmptyString(newFilm.getDescription()) ? oldFilm.getDescription() : newFilm.getDescription())
+                    .duration(newFilm.getDuration() == null ? oldFilm.getDuration() : newFilm.getDuration())
+                    .releaseDate(newFilm.getReleaseDate() == null ? oldFilm.getReleaseDate() : newFilm.getReleaseDate())
                     .build();
             films.put(oldFilm.getId(), oldFilm);
             log.info("Обновление фильма: {}", oldFilm);
@@ -74,4 +74,6 @@ public class FilmController {
                 .orElse(0);
         return ++currentMaxId;
     }
+
+
 }

@@ -2,10 +2,15 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.validation.groups.OnCreate;
+import ru.yandex.practicum.filmorate.validation.groups.OnUpdate;
+
+import static ru.yandex.practicum.filmorate.validation.Validation.isEmptyString;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,7 +29,7 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@Valid @RequestBody User user) {
+    public User create(@Validated(OnCreate.class) @RequestBody User user) {
         log.trace("Создание пользователя");
         user.setId(getNextId());
         if (user.getName() == null || user.getName().isEmpty() || user.getName().isBlank()) {
@@ -36,20 +41,16 @@ public class UserController {
     }
 
     @PutMapping
-    public User update(@Valid @RequestBody User newUser) {
+    public User update(@Validated(OnUpdate.class) @RequestBody User newUser) {
         log.trace("Обновление пользователя");
-        if (newUser.getId() == null) {
-            log.error("Обновление пользователя без id");
-            throw new ValidationException("Id должен быть указан");
-        }
         if (users.containsKey(newUser.getId())) {
             User oldUser = users.get(newUser.getId());
             oldUser = User.builder()
                     .id(oldUser.getId())
-                    .email(newUser.getEmail())
-                    .login(newUser.getLogin())
-                    .name(newUser.getName())
-                    .birthday(newUser.getBirthday())
+                    .email(isEmptyString(newUser.getEmail()) ? oldUser.getEmail() : newUser.getEmail())
+                    .login(isEmptyString(newUser.getLogin()) ? oldUser.getLogin() : newUser.getLogin())
+                    .name(isEmptyString(newUser.getName()) ? oldUser.getName() : newUser.getName())
+                    .birthday(newUser.getBirthday() == null ? oldUser.getBirthday() : newUser.getBirthday())
                     .build();
             users.put(oldUser.getId(), oldUser);
             log.info("Обновление пользователя: {}", oldUser);
