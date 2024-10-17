@@ -16,11 +16,13 @@ import static ru.yandex.practicum.filmorate.validation.Validation.isEmptyString;
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Long, User> users = new HashMap<>();
 
+    @Override
     public Collection<User> findAll() {
         log.trace("Получение всех пользователей");
         return users.values();
     }
 
+    @Override
     public User create(User user) {
         log.trace("Создание пользователя");
         user.setId(getNextId());
@@ -32,6 +34,7 @@ public class InMemoryUserStorage implements UserStorage {
         return user;
     }
 
+    @Override
     public User update(User newUser) {
         log.trace("Обновление пользователя");
         if (users.containsKey(newUser.getId())) {

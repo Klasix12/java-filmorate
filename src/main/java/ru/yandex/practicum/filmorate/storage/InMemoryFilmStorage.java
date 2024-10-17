@@ -17,11 +17,13 @@ import static ru.yandex.practicum.filmorate.validation.Validation.isEmptyString;
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Long, Film> films = new HashMap<>();
 
+    @Override
     public Collection<Film> findAll() {
         log.trace("Получение всех фильмов");
         return films.values();
     }
 
+    @Override
     public Film create(Film film) {
         log.trace("Создание фильма");
         if (Film.isCorrectReleaseDate(film.getReleaseDate())) {
@@ -34,6 +36,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         throw new ValidationException("Фильм не может быть выпущен раньше 28 декабря 1895");
     }
 
+    @Override
     public Film update(Film newFilm) {
         log.trace("Обновление фильма");
         if (!Film.isCorrectReleaseDate(newFilm.getReleaseDate())) {
