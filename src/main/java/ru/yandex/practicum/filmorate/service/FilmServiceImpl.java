@@ -37,7 +37,7 @@ public class FilmServiceImpl implements FilmService {
             film.getLikes().remove(userId);
         } else {
             log.error("Пользователь с id {} не ставил лайк фильму с id {}", userId, filmId);
-            throw new NotFoundException("Пользователь с id "+ userId + " не ставил лайк фильму с id " + filmId);
+            throw new NotFoundException("Пользователь с id " + userId + " не ставил лайк фильму с id " + filmId);
         }
     }
 
