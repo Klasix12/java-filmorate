@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import static ru.yandex.practicum.filmorate.validation.Validation.isEmptyString;
@@ -39,6 +40,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         log.trace("Создание фильма");
         if (Film.isCorrectReleaseDate(film.getReleaseDate())) {
             film.setId(getNextId());
+            film.setLikes(new HashSet<>());
             films.put(film.getId(), film);
             log.info("Добавлен фильм: {}", film);
             return film;
@@ -72,6 +74,7 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .description(isEmptyString(newFilm.getDescription()) ? oldFilm.getDescription() : newFilm.getDescription())
                 .duration(newFilm.getDuration() == null ? oldFilm.getDuration() : newFilm.getDuration())
                 .releaseDate(newFilm.getReleaseDate() == null ? oldFilm.getReleaseDate() : newFilm.getReleaseDate())
+                .likes(newFilm.getLikes() == null ? oldFilm.getLikes() : newFilm.getLikes())
                 .build();
     }
 

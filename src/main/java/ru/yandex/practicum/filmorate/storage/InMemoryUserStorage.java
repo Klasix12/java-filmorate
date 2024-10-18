@@ -7,8 +7,8 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 
 import static ru.yandex.practicum.filmorate.validation.Validation.isEmptyString;
 
@@ -41,6 +41,7 @@ public class InMemoryUserStorage implements UserStorage {
         if (user.getName() == null || user.getName().isEmpty() || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
+        user.setFriends(new HashSet<>());
         users.put(user.getId(), user);
         log.info("Создан пользователь: {}", user);
         return user;
@@ -67,6 +68,7 @@ public class InMemoryUserStorage implements UserStorage {
                 .login(isEmptyString(newUser.getLogin()) ? oldUser.getLogin() : newUser.getLogin())
                 .name(isEmptyString(newUser.getName()) ? oldUser.getName() : newUser.getName())
                 .birthday(newUser.getBirthday() == null ? oldUser.getBirthday() : newUser.getBirthday())
+                .friends(newUser.getFriends() == null ? oldUser.getFriends() : newUser.getFriends())
                 .build();
     }
 

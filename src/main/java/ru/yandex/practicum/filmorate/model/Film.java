@@ -16,7 +16,6 @@ import java.util.Set;
 @Data
 @Builder
 public class Film {
-
     @NotNull(message = "", groups = {OnUpdate.class})
     private Long id;
 
