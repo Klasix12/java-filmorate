@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static ru.yandex.practicum.filmorate.validation.Validation.isEmptyString;
 
@@ -20,6 +21,17 @@ public class InMemoryUserStorage implements UserStorage {
     public Collection<User> findAll() {
         log.trace("Получение всех пользователей");
         return users.values();
+    }
+
+    @Override
+    public User findById(long id) {
+        log.trace("Получение пользователя по id");
+        if (users.containsKey(id)) {
+            log.info("Получение пользователя с id {}", id);
+            return users.get(id);
+        }
+        log.error("Пользователь с id {} не найден", id);
+        throw new NotFoundException("Пользователь с id " + id + " не найден.");
     }
 
     @Override
@@ -39,19 +51,23 @@ public class InMemoryUserStorage implements UserStorage {
         log.trace("Обновление пользователя");
         if (users.containsKey(newUser.getId())) {
             User oldUser = users.get(newUser.getId());
-            oldUser = User.builder()
-                    .id(oldUser.getId())
-                    .email(isEmptyString(newUser.getEmail()) ? oldUser.getEmail() : newUser.getEmail())
-                    .login(isEmptyString(newUser.getLogin()) ? oldUser.getLogin() : newUser.getLogin())
-                    .name(isEmptyString(newUser.getName()) ? oldUser.getName() : newUser.getName())
-                    .birthday(newUser.getBirthday() == null ? oldUser.getBirthday() : newUser.getBirthday())
-                    .build();
+            oldUser = updateUserData(oldUser, newUser);
             users.put(oldUser.getId(), oldUser);
             log.info("Обновление пользователя: {}", oldUser);
             return oldUser;
         }
         log.error("Id {} обновляемого пользователя не найдено", newUser.getId());
         throw new NotFoundException("Пользователь с id " + newUser.getId() + " не найден");
+    }
+
+    private User updateUserData(User oldUser, User newUser) {
+        return User.builder()
+                .id(oldUser.getId())
+                .email(isEmptyString(newUser.getEmail()) ? oldUser.getEmail() : newUser.getEmail())
+                .login(isEmptyString(newUser.getLogin()) ? oldUser.getLogin() : newUser.getLogin())
+                .name(isEmptyString(newUser.getName()) ? oldUser.getName() : newUser.getName())
+                .birthday(newUser.getBirthday() == null ? oldUser.getBirthday() : newUser.getBirthday())
+                .build();
     }
 
     private long getNextId() {

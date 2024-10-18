@@ -24,6 +24,17 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public Film findById(long id) {
+        log.trace("Получение фильма по id");
+        if (films.containsKey(id)) {
+            log.info("Получение фильма с id {}", id);
+            return films.get(id);
+        }
+        log.error("Фильм с id {} не найден", id);
+        throw new NotFoundException("Фильм с id " + id + " не найден.");
+    }
+
+    @Override
     public Film create(Film film) {
         log.trace("Создание фильма");
         if (Film.isCorrectReleaseDate(film.getReleaseDate())) {
@@ -45,7 +56,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
         if (films.containsKey(newFilm.getId())) {
             Film oldFilm = films.get(newFilm.getId());
-            oldFilm = updateFilm(oldFilm, newFilm);
+            oldFilm = updateFilmData(oldFilm, newFilm);
             films.put(oldFilm.getId(), oldFilm);
             log.info("Обновление фильма: {}", oldFilm);
             return oldFilm;
@@ -54,7 +65,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         throw new NotFoundException("Фильм с id " + newFilm.getId() + " не найден");
     }
 
-    private Film updateFilm(Film oldFilm, Film newFilm) {
+    private Film updateFilmData(Film oldFilm, Film newFilm) {
         return Film.builder()
                 .id(oldFilm.getId())
                 .name(isEmptyString(newFilm.getName()) ? oldFilm.getName() : newFilm.getName())
