@@ -11,11 +11,11 @@ import ru.yandex.practicum.filmorate.validation.groups.OnUpdate;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Set;
 
 @Data
 @Builder
 public class Film {
-
     @NotNull(message = "", groups = {OnUpdate.class})
     private Long id;
 
@@ -29,6 +29,8 @@ public class Film {
 
     @PositiveOrZero(message = "Продолжительность должна быть положительным числом", groups = {OnCreate.class})
     private Integer duration;
+
+    private Set<Long> likes;
 
     private static final LocalDate MIN_RELEASE_DATE = LocalDate.of(1895, Month.DECEMBER, 28);
 
