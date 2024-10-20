@@ -19,45 +19,36 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public Collection<User> findAll() {
-        log.trace("Получение всех пользователей");
         return users.values();
     }
 
     @Override
     public User findById(long id) {
-        log.trace("Получение пользователя по id");
         if (users.containsKey(id)) {
-            log.info("Получение пользователя с id {}", id);
             return users.get(id);
         }
-        log.error("Пользователь с id {} не найден", id);
         throw new NotFoundException("Пользователь с id " + id + " не найден.");
     }
 
     @Override
     public User create(User user) {
-        log.trace("Создание пользователя");
         user.setId(getNextId());
         if (user.getName() == null || user.getName().isEmpty() || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
         user.setFriends(new HashSet<>());
         users.put(user.getId(), user);
-        log.info("Создан пользователь: {}", user);
         return user;
     }
 
     @Override
     public User update(User newUser) {
-        log.trace("Обновление пользователя");
         if (users.containsKey(newUser.getId())) {
             User oldUser = users.get(newUser.getId());
             oldUser = updateUserData(oldUser, newUser);
             users.put(oldUser.getId(), oldUser);
-            log.info("Обновление пользователя: {}", oldUser);
             return oldUser;
         }
-        log.error("Id {} обновляемого пользователя не найдено", newUser.getId());
         throw new NotFoundException("Пользователь с id " + newUser.getId() + " не найден");
     }
 
