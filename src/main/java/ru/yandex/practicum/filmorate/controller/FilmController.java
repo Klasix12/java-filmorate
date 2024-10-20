@@ -24,18 +24,21 @@ public class FilmController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public Collection<Film> findAll() {
+        log.trace("Получение всех фильмов");
         return filmStorage.findAll();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Film create(@Validated(OnCreate.class) @RequestBody Film film) {
+        log.trace("Добавление фильма");
         return filmStorage.create(film);
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public Film update(@Validated(OnUpdate.class) @RequestBody Film film) {
+        log.trace("Обновление фильма");
         return filmStorage.update(film);
     }
 
@@ -43,6 +46,7 @@ public class FilmController {
     @ResponseStatus(HttpStatus.OK)
     public void addLike(@PathVariable long id,
                         @PathVariable long userId) {
+        log.trace("Добавление лайка");
         filmService.addLike(id, userId);
     }
 
@@ -50,12 +54,14 @@ public class FilmController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteLike(@PathVariable long id,
                            @PathVariable long userId) {
+        log.trace("Удаление лайка");
         filmService.deleteLike(id, userId);
     }
 
     @GetMapping("/popular")
     @ResponseStatus(HttpStatus.OK)
     public Collection<Film> findPopularFilms(@RequestParam(required = false, defaultValue = "10") int count) {
+        log.trace("Получение популярных фильмов");
         return filmService.findPopularFilms(count);
     }
 }
