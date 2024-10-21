@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = FilmReleaseDateValidation.class)
 @Documented
 public @interface FilmReleaseDate {
-    String message() default "Фильм не может быть выпушен раньше 28 декабря 1895";
+    String message() default "";
 
     Class<?>[] groups() default {};
 

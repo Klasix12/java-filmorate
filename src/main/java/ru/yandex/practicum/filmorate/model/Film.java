@@ -25,7 +25,7 @@ public class Film {
     @Size(max = 200, message = "Максимальная длина описания фильма 200 символов", groups = {OnCreate.class})
     private String description;
 
-    @FilmReleaseDate(groups = {OnCreate.class})
+    @FilmReleaseDate(message = "Фильм не может быть выпушен раньше 28 декабря 1895", groups = {OnCreate.class})
     private LocalDate releaseDate;
 
     @PositiveOrZero(message = "Продолжительность должна быть положительным числом", groups = {OnCreate.class})
