@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -12,7 +11,6 @@ import ru.yandex.practicum.filmorate.validation.groups.OnCreate;
 import ru.yandex.practicum.filmorate.validation.groups.OnUpdate;
 
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.Set;
 
 @Data
@@ -27,13 +25,11 @@ public class Film {
     @Size(max = 200, message = "Максимальная длина описания фильма 200 символов", groups = {OnCreate.class})
     private String description;
 
-    @FilmReleaseDate
+    @FilmReleaseDate(groups = {OnCreate.class})
     private LocalDate releaseDate;
 
     @PositiveOrZero(message = "Продолжительность должна быть положительным числом", groups = {OnCreate.class})
     private Integer duration;
 
-    @JsonIgnore
     private Set<Long> likes;
-
 }

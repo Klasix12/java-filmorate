@@ -7,7 +7,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.validation.groups.OnCreate;
 import ru.yandex.practicum.filmorate.validation.groups.OnUpdate;
 
@@ -18,28 +17,27 @@ import java.util.Collection;
 @Slf4j
 @RequiredArgsConstructor
 public class FilmController {
-    private final FilmStorage filmStorage;
     private final FilmService filmService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public Collection<Film> findAll() {
         log.trace("Получение всех фильмов");
-        return filmStorage.findAll();
+        return filmService.findAll();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Film create(@Validated(OnCreate.class) @RequestBody Film film) {
         log.trace("Добавление фильма");
-        return filmStorage.create(film);
+        return filmService.create(film);
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public Film update(@Validated(OnUpdate.class) @RequestBody Film film) {
         log.trace("Обновление фильма");
-        return filmStorage.update(film);
+        return filmService.update(film);
     }
 
     @PutMapping("/{id}/like/{userId}")

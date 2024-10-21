@@ -7,7 +7,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validation.groups.OnCreate;
 import ru.yandex.practicum.filmorate.validation.groups.OnUpdate;
 
@@ -18,27 +17,26 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {
-    private final UserStorage userStorage;
     private final UserService userService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public Collection<User> findAll() {
         log.trace("Получение всех пользователей");
-        return userStorage.findAll();
+        return userService.findAll();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public User create(@Validated(OnCreate.class) @RequestBody User user) {
         log.trace("Добавление пользователя");
-        return userStorage.create(user);
+        return userService.create(user);
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public User update(@Validated(OnUpdate.class) @RequestBody User user) {
-        return userStorage.update(user);
+        return userService.update(user);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
