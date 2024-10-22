@@ -26,8 +26,7 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public Film
-    create(Film film) {
+    public Film create(Film film) {
         film.setLikes(new HashSet<>());
         return filmStorage.create(film);
     }
@@ -66,7 +65,8 @@ public class FilmServiceImpl implements FilmService {
 
     private Film findFilmByIdOrThrow(long filmId) {
         log.error("Не удалось найти фильм с id {}", filmId);
-        return filmStorage.findById(filmId).orElseThrow(() -> new NotFoundException("Фильм с id " + filmId + " не найден."));
+        return filmStorage.findById(filmId)
+                .orElseThrow(() -> new NotFoundException("Фильм с id " + filmId + " не найден."));
     }
 
     private Film updateFilmData(Film oldFilm, Film newFilm) {

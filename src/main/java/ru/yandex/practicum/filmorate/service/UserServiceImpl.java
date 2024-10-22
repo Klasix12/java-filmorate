@@ -80,7 +80,8 @@ public class UserServiceImpl implements UserService {
 
     private User findUserByIdOrThrow(long userId) {
         log.error("Не удалось найти пользователя с id {}", userId);
-        return userStorage.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь с id " + userId + " не найден"));
+        return userStorage.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id " + userId + " не найден"));
     }
 
     private User updateUserData(User oldUser, User newUser) {
