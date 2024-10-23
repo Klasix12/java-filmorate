@@ -1,69 +1,68 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.validation.groups.OnCreate;
 import ru.yandex.practicum.filmorate.validation.groups.OnUpdate;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import static ru.yandex.practicum.filmorate.validation.Validation.isEmptyString;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 @Slf4j
 public class UserController {
-    private final Map<Long, User> users = new HashMap<>();
+    private final UserService userService;
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public Collection<User> findAll() {
         log.trace("Получение всех пользователей");
-        return users.values();
+        return userService.findAll();
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public User create(@Validated(OnCreate.class) @RequestBody User user) {
-        log.trace("Создание пользователя");
-        user.setId(getNextId());
-        if (user.getName() == null || user.getName().isEmpty() || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-        users.put(user.getId(), user);
-        log.info("Создан пользователь: {}", user);
-        return user;
+        log.trace("Добавление пользователя");
+        return userService.create(user);
     }
 
     @PutMapping
-    public User update(@Validated(OnUpdate.class) @RequestBody User newUser) {
-        log.trace("Обновление пользователя");
-        if (users.containsKey(newUser.getId())) {
-            User oldUser = users.get(newUser.getId());
-            oldUser = User.builder()
-                    .id(oldUser.getId())
-                    .email(isEmptyString(newUser.getEmail()) ? oldUser.getEmail() : newUser.getEmail())
-                    .login(isEmptyString(newUser.getLogin()) ? oldUser.getLogin() : newUser.getLogin())
-                    .name(isEmptyString(newUser.getName()) ? oldUser.getName() : newUser.getName())
-                    .birthday(newUser.getBirthday() == null ? oldUser.getBirthday() : newUser.getBirthday())
-                    .build();
-            users.put(oldUser.getId(), oldUser);
-            log.info("Обновление пользователя: {}", oldUser);
-            return oldUser;
-        }
-        log.error("Id {} обновляемого пользователя не найдено", newUser.getId());
-        throw new NotFoundException("Пользователь с id " + newUser.getId() + " не найден");
+    @ResponseStatus(HttpStatus.OK)
+    public User update(@Validated(OnUpdate.class) @RequestBody User user) {
+        return userService.update(user);
     }
 
-    private long getNextId() {
-        long currentMaxId = users.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+    @PutMapping("/{id}/friends/{friendId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void addFriend(@PathVariable long id,
+                          @PathVariable long friendId) {
+        userService.addFriend(id, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteFriend(@PathVariable long id,
+                             @PathVariable long friendId) {
+        userService.deleteFriend(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends")
+    @ResponseStatus(HttpStatus.OK)
+    public Collection<User> getFriends(@PathVariable long id) {
+        return userService.getFriends(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Collection<User> getMutualFriends(@PathVariable long id,
+                                             @PathVariable long otherId) {
+        return userService.getMutualFriends(id, otherId);
     }
 }
