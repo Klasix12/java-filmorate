@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.validation.groups.OnCreate;
 import ru.yandex.practicum.filmorate.validation.groups.OnUpdate;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -32,6 +33,7 @@ public class Film {
     @PositiveOrZero(message = "Продолжительность должна быть положительным числом", groups = {OnCreate.class})
     private Integer duration;
 
-    @JsonIgnore
-    private Set<Long> likes;
+    private Mpa mpa;
+
+    private List<Genre> genres;
 }

@@ -1,15 +1,19 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.GenreRepository;
+import ru.yandex.practicum.filmorate.storage.MpaRepository;
+import ru.yandex.practicum.filmorate.storage.UserRepository;
 import ru.yandex.practicum.filmorate.validation.Validation;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.validation.Validation.isEmptyString;
@@ -18,69 +22,66 @@ import static ru.yandex.practicum.filmorate.validation.Validation.isEmptyString;
 @RequiredArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
-    private final UserStorage userStorage;
+    private final UserRepository userRepository;
 
     @Override
     public Collection<User> findAll() {
-        return userStorage.findAll();
+        return userRepository.findAll();
     }
 
     @Override
     public User create(User user) {
-        user.setFriends(new HashSet<>());
         if (Validation.isEmptyString(user.getName())) {
             user.setName(user.getLogin());
         }
-        return userStorage.create(user);
+        return userRepository.create(user);
     }
 
     @Override
     public User update(User user) {
         User oldUser = findUserByIdOrThrow(user.getId());
         oldUser = updateUserData(oldUser, user);
-        return userStorage.update(oldUser);
+        userRepository.update(oldUser);
+        return oldUser;
     }
 
     @Override
     public void addFriend(long userId, long friendId) {
-        User user = findUserByIdOrThrow(userId);
-        User friendUser = findUserByIdOrThrow(friendId);
-        user.getFriends().add(friendUser.getId());
-        friendUser.getFriends().add(user.getId());
-        log.info("Пользователи с id {} и {} добавили друг-друга в друзья", userId, friendId);
+        try {
+            userRepository.addFriend(userId, friendId);
+        } catch (Exception e) {
+            throw new NotFoundException("Не удалось добавить пользователя в друзья");
+        }
+        log.info("Пользователь с id {} добавил в друзья пользователя с id {}", userId, friendId);
     }
 
     @Override
     public void deleteFriend(long userId, long friendId) {
-        User user = findUserByIdOrThrow(userId);
-        User friendUser = findUserByIdOrThrow(friendId);
-        user.getFriends().remove(friendId);
-        friendUser.getFriends().remove(userId);
+        findUserByIdOrThrow(userId);
+        findUserByIdOrThrow(friendId);
+        int rows = userRepository.deleteFriend(userId, friendId);
+        if (rows == 0) {
+            log.error("Пользователь с id {} не является другом пользователя с id {}", userId, friendId);
+        }
         log.info("Пользователи с id {} и {} удалили друг-друга из друзей", userId, friendId);
     }
 
     @Override
     public Collection<User> getFriends(long userId) {
         log.info("Пользователь с id {} получает список своих друзей", userId);
-        return findUserByIdOrThrow(userId).getFriends().stream()
-                .map(this::findUserByIdOrThrow)
-                .collect(Collectors.toList());
+        findUserByIdOrThrow(userId);
+        return userRepository.findUserFriends(userId);
     }
 
     @Override
     public Collection<User> getMutualFriends(long userId, long otherUserId) {
-        User user = findUserByIdOrThrow(userId);
-        User otherUser = findUserByIdOrThrow(otherUserId);
         log.info("Пользователь с id {} получил список общих друзей пользователя с id {}", userId, otherUserId);
-        return user.getFriends().stream()
-                .filter(id -> otherUser.getFriends().contains(id))
-                .map(this::findUserByIdOrThrow)
-                .collect(Collectors.toList());
+        return userRepository.findMutualFriends(userId, otherUserId);
     }
 
     private User findUserByIdOrThrow(long userId) {
         log.error("Не удалось найти пользователя с id {}", userId);
-        return userStorage.findById(userId)
+        return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id " + userId + " не найден"));
     }
 
