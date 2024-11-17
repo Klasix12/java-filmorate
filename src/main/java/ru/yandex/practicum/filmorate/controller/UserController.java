@@ -36,6 +36,7 @@ public class UserController {
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public User update(@Validated(OnUpdate.class) @RequestBody User user) {
+        log.trace("Обновление пользователя");
         return userService.update(user);
     }
 
@@ -43,6 +44,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public void addFriend(@PathVariable long id,
                           @PathVariable long friendId) {
+        log.trace("Добавление друга");
         userService.addFriend(id, friendId);
     }
 
@@ -50,12 +52,14 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteFriend(@PathVariable long id,
                              @PathVariable long friendId) {
+        log.trace("Удаление друга");
         userService.deleteFriend(id, friendId);
     }
 
     @GetMapping("/{id}/friends")
     @ResponseStatus(HttpStatus.OK)
     public Collection<User> getFriends(@PathVariable long id) {
+        log.trace("Получение друзей пользователя");
         return userService.getFriends(id);
     }
 
@@ -63,6 +67,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public Collection<User> getMutualFriends(@PathVariable long id,
                                              @PathVariable long otherId) {
+        log.trace("Получение общих друзей");
         return userService.getMutualFriends(id, otherId);
     }
 }

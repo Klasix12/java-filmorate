@@ -18,11 +18,13 @@ public class MpaServiceImpl implements MpaService {
 
     @Override
     public Collection<Mpa> findAll() {
+        log.trace("Получение всех рейтингов");
         return mpaRepository.findAll();
     }
 
     @Override
     public Mpa findById(long id) {
+        log.info("Получение рейтинга с id {}", id);
         return mpaRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Не удалось найти рейтинг с id " + id));
     }

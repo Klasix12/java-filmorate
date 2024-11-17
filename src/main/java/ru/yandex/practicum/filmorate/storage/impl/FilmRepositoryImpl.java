@@ -3,9 +3,7 @@ package ru.yandex.practicum.filmorate.storage.impl;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.BaseRepository;
 import ru.yandex.practicum.filmorate.storage.FilmRepository;
 
@@ -13,7 +11,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -31,7 +28,6 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
             "LIMIT ?) AS s";
     private static final String ADD_LIKE_QUERY = "INSERT INTO likes (film_id, user_id) VALUES (?, ?)";
     private static final String DELETE_LIKE_QUERY = "DELETE FROM likes WHERE film_id = ? AND user_id = ?";
-
 
 
     public FilmRepositoryImpl(JdbcTemplate jdbc, RowMapper<Film> mapper) {

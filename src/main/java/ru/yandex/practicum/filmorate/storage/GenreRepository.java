@@ -14,5 +14,6 @@ public interface GenreRepository {
     Collection<Genre> findGenresByFilmId(long id);
 
     void addFilmGenres(long filmId, Collection<Genre> genres);
+
     void updateFilmGenres(long filmId, List<Genre> genres);
 }

@@ -30,13 +30,19 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public Collection<Film> findAll() {
-        return filmRepository.findAll();
+        log.info("Получение всех фильмов");
+        Collection<Film> films = filmRepository.findAll();
+        for (Film film : films) {
+            setMpaAndGenres(film);
+        }
+        return films;
     }
 
     @Override
     public Film findById(long id) {
         Film film = findFilmByIdOrThrow(id);
         setMpaAndGenres(film);
+        log.info("Получение фильма с id {}", id);
         return film;
     }
 
@@ -48,8 +54,10 @@ public class FilmServiceImpl implements FilmService {
                 genreRepository.addFilmGenres(film.getId(), film.getGenres());
             }
             setMpaAndGenres(savedFilm);
+            log.info("Добавление фильма {}", film);
             return savedFilm;
         } catch (DataIntegrityViolationException e) {
+            log.error("Ошибка при добавлении фильма {}", film);
             throw new ValidationException("Ошибка при добавлении фильма");
         }
     }
@@ -58,16 +66,13 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public Film update(Film film) {
         Film oldFilm = findFilmByIdOrThrow(film.getId());
-
         if (!isGenresEquals(oldFilm.getGenres(), film.getGenres())) {
             genreRepository.updateFilmGenres(film.getId(), film.getGenres());
         }
-
         oldFilm = updateFilmData(oldFilm, film);
         setMpaAndGenres(oldFilm);
-
         filmRepository.update(oldFilm);
-
+        log.info("Обновление фильма {}", oldFilm);
         return oldFilm;
     }
 
@@ -93,6 +98,7 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public Collection<Film> findPopularFilms(int count) {
+        log.info("Получение популярных фильмов");
         return filmRepository.getPopularFilms(count);
     }
 

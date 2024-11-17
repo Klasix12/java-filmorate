@@ -2,19 +2,15 @@ package ru.yandex.practicum.filmorate.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.GenreRepository;
-import ru.yandex.practicum.filmorate.storage.MpaRepository;
 import ru.yandex.practicum.filmorate.storage.UserRepository;
 import ru.yandex.practicum.filmorate.validation.Validation;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.validation.Validation.isEmptyString;
 
@@ -26,6 +22,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Collection<User> findAll() {
+        log.trace("Получение всех пользователей");
         return userRepository.findAll();
     }
 
@@ -34,6 +31,7 @@ public class UserServiceImpl implements UserService {
         if (Validation.isEmptyString(user.getName())) {
             user.setName(user.getLogin());
         }
+        log.info("Создание пользователя {}", user);
         return userRepository.create(user);
     }
 
@@ -42,6 +40,7 @@ public class UserServiceImpl implements UserService {
         User oldUser = findUserByIdOrThrow(user.getId());
         oldUser = updateUserData(oldUser, user);
         userRepository.update(oldUser);
+        log.info("Обновление пользователя {}", oldUser);
         return oldUser;
     }
 
@@ -49,7 +48,8 @@ public class UserServiceImpl implements UserService {
     public void addFriend(long userId, long friendId) {
         try {
             userRepository.addFriend(userId, friendId);
-        } catch (Exception e) {
+        } catch (DataIntegrityViolationException e) {
+            log.error("Ошибка при добавлении в друзья");
             throw new NotFoundException("Не удалось добавить пользователя в друзья");
         }
         log.info("Пользователь с id {} добавил в друзья пользователя с id {}", userId, friendId);
@@ -59,10 +59,7 @@ public class UserServiceImpl implements UserService {
     public void deleteFriend(long userId, long friendId) {
         findUserByIdOrThrow(userId);
         findUserByIdOrThrow(friendId);
-        int rows = userRepository.deleteFriend(userId, friendId);
-        if (rows == 0) {
-            log.error("Пользователь с id {} не является другом пользователя с id {}", userId, friendId);
-        }
+        userRepository.deleteFriend(userId, friendId);
         log.info("Пользователи с id {} и {} удалили друг-друга из друзей", userId, friendId);
     }
 
