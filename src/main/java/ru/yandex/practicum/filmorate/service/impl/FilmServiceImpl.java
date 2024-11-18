@@ -78,8 +78,8 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public void addLike(long filmId, long userId) {
-        userRepository.findById(userId).
-                orElseThrow(() -> new NotFoundException("Пользователь с id " + userId + " не найден"));
+        userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id " + userId + " не найден"));
         findFilmByIdOrThrow(filmId);
         filmRepository.addLike(filmId, userId);
         log.info("Пользователь с id {} поставил лайк фильму с id {}", userId, filmId);
@@ -116,7 +116,6 @@ public class FilmServiceImpl implements FilmService {
                 .duration(newFilm.getDuration() == null ? oldFilm.getDuration() : newFilm.getDuration())
                 .releaseDate(newFilm.getReleaseDate() == null ? oldFilm.getReleaseDate() : newFilm.getReleaseDate())
                 .mpa(newFilm.getMpa() == null ? oldFilm.getMpa() : newFilm.getMpa())
-                // oldFilm всегда будет null
                 .genres(newFilm.getGenres() == null || newFilm.getGenres().isEmpty() ? oldFilm.getGenres() : newFilm.getGenres())
                 .build();
     }
