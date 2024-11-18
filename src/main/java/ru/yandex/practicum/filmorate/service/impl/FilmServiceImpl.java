@@ -99,7 +99,7 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public Collection<Film> findPopularFilms(int count) {
         log.info("Получение популярных фильмов");
-        return filmRepository.getPopularFilms(count);
+        return filmRepository.findPopularFilms(count);
     }
 
     private Film findFilmByIdOrThrow(long filmId) {

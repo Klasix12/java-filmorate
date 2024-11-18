@@ -68,7 +68,7 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
     }
 
     @Override
-    public Collection<Film> getPopularFilms(int count) {
+    public Collection<Film> findPopularFilms(int count) {
         return findMany(FIND_POPULAR_QUERY, count);
     }
 

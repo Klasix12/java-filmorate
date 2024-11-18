@@ -14,7 +14,7 @@ public interface FilmRepository {
 
     Film update(Film newFilm);
 
-    Collection<Film> getPopularFilms(int count);
+    Collection<Film> findPopularFilms(int count);
 
     void addLike(long filmId, long userId);
 
