@@ -16,11 +16,11 @@ import ru.yandex.practicum.filmorate.storage.impl.MpaRepositoryImpl;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class MpaRepositoryImplTests {
     private final MpaRepositoryImpl mpaRepository;
-    private final int MPA_COUNT = 5;
+    private final int mpaCount = 5;
 
     @Test
     public void testFindAll() {
-        Assertions.assertEquals(MPA_COUNT, mpaRepository.findAll().size());
+        Assertions.assertEquals(mpaCount, mpaRepository.findAll().size());
     }
 
     @Test

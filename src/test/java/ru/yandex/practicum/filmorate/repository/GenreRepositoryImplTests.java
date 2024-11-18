@@ -16,11 +16,11 @@ import ru.yandex.practicum.filmorate.storage.impl.GenreRepositoryImpl;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class GenreRepositoryImplTests {
     private final GenreRepositoryImpl genreRepository;
-    private static final int GENRE_COUNT = 6;
+    private static final int genreCount = 6;
 
     @Test
     public void testFindAll() {
-        Assertions.assertEquals(GENRE_COUNT, genreRepository.findAll().size());
+        Assertions.assertEquals(genreCount, genreRepository.findAll().size());
     }
 
     @Test
