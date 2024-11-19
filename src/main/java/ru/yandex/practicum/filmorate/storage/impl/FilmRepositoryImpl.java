@@ -15,14 +15,15 @@ import java.util.Optional;
 
 @Repository
 public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepository {
-    private static final String FIND_ALL_QUERY = "SELECT * FROM films";
-    private static final String FIND_BY_ID_QUERY = "SELECT * FROM films WHERE id = ?";
+    private static final String FIND_ALL_QUERY = "SELECT f.*, m.mpa_name FROM films AS f JOIN mpa AS m ON f.mpa_id = m.id";
+    private static final String FIND_BY_ID_QUERY = "SELECT f.*, m.mpa_name FROM films AS f JOIN mpa AS m ON f.mpa_id = m.id WHERE f.id = ?";
     private static final String CREATE_QUERY = "INSERT INTO films (name, description, release_date, duration, mpa_id) VALUES (?, ?, ?, ?, ?)";
     private static final String UPDATE_QUERY = "UPDATE films SET name = ?, description = ?, release_date = ?, duration = ? WHERE id = ?";
-    private static final String FIND_POPULAR_QUERY = "SELECT s.id, s.name, s.description, s.release_date, s.duration, s.mpa_id " +
-            "FROM (SELECT f.id, f.name, f.description, f.release_date, f.duration, f.mpa_id, COUNT(l.user_id) AS user_likes " +
+    private static final String FIND_POPULAR_QUERY = "SELECT s.id, s.name, s.description, s.release_date, s.duration, s.mpa_id, s.mpa_name " +
+            "FROM (SELECT f.id, f.name, f.description, f.release_date, f.duration, f.mpa_id, m.mpa_name, COUNT(l.user_id) AS user_likes " +
             "FROM films AS f " +
             "JOIN likes AS l ON f.id = l.film_id " +
+            "JOIN mpa AS m ON f.mpa_id = m.id " +
             "GROUP BY f.id, f.name, f.description, f.release_date, f.duration, f.mpa_id\n" +
             "ORDER BY user_likes DESC " +
             "LIMIT ?) AS s";

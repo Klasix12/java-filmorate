@@ -89,7 +89,6 @@ public class UserServiceImpl implements UserService {
                 .login(isEmptyString(newUser.getLogin()) ? oldUser.getLogin() : newUser.getLogin())
                 .name(isEmptyString(newUser.getName()) ? oldUser.getName() : newUser.getName())
                 .birthday(newUser.getBirthday() == null ? oldUser.getBirthday() : newUser.getBirthday())
-                .friends(newUser.getFriends() == null ? oldUser.getFriends() : newUser.getFriends())
                 .build();
     }
 }

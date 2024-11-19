@@ -7,15 +7,19 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmGenre;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.FilmGenreRepository;
 import ru.yandex.practicum.filmorate.storage.FilmRepository;
 import ru.yandex.practicum.filmorate.storage.GenreRepository;
-import ru.yandex.practicum.filmorate.storage.MpaRepository;
 import ru.yandex.practicum.filmorate.storage.UserRepository;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.validation.Validation.isEmptyString;
 
@@ -25,23 +29,21 @@ import static ru.yandex.practicum.filmorate.validation.Validation.isEmptyString;
 public class FilmServiceImpl implements FilmService {
     private final FilmRepository filmRepository;
     private final UserRepository userRepository;
-    private final MpaRepository mpaRepository;
     private final GenreRepository genreRepository;
+    private final FilmGenreRepository filmGenreRepository;
 
     @Override
     public Collection<Film> findAll() {
         log.info("Получение всех фильмов");
         Collection<Film> films = filmRepository.findAll();
-        for (Film film : films) {
-            setMpaAndGenres(film);
-        }
+        setGenres(films);
         return films;
     }
 
     @Override
     public Film findById(long id) {
         Film film = findFilmByIdOrThrow(id);
-        setMpaAndGenres(film);
+        setGenres(film);
         log.info("Получение фильма с id {}", id);
         return film;
     }
@@ -53,8 +55,8 @@ public class FilmServiceImpl implements FilmService {
             if (film.getGenres() != null) {
                 genreRepository.addFilmGenres(film.getId(), film.getGenres());
             }
-            setMpaAndGenres(savedFilm);
             log.info("Добавление фильма {}", film);
+            setGenres(film);
             return savedFilm;
         } catch (DataIntegrityViolationException e) {
             log.error("Ошибка при добавлении фильма {}", film);
@@ -70,8 +72,8 @@ public class FilmServiceImpl implements FilmService {
             genreRepository.updateFilmGenres(film.getId(), film.getGenres());
         }
         oldFilm = updateFilmData(oldFilm, film);
-        setMpaAndGenres(oldFilm);
         filmRepository.update(oldFilm);
+        setGenres(oldFilm);
         log.info("Обновление фильма {}", oldFilm);
         return oldFilm;
     }
@@ -99,7 +101,9 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public Collection<Film> findPopularFilms(int count) {
         log.info("Получение популярных фильмов");
-        return filmRepository.findPopularFilms(count);
+        Collection<Film> films = filmRepository.findPopularFilms(count);
+        setGenres(films);
+        return films;
     }
 
     private Film findFilmByIdOrThrow(long filmId) {
@@ -120,10 +124,23 @@ public class FilmServiceImpl implements FilmService {
                 .build();
     }
 
-    private void setMpaAndGenres(Film film) {
-        film.setMpa(mpaRepository.findById(film.getMpa().getId())
-                .orElseThrow(() -> new NotFoundException("Не удалось найти рейтинг с id " + film.getMpa().getId())));
+    private void setGenres(Film film) {
         film.setGenres(genreRepository.findGenresByFilmId(film.getId()).stream().toList());
+    }
+
+    private void setGenres(Collection<Film> films) {
+        Map<Long, Film> filmsMap = films.stream()
+                .peek(film -> film.setGenres(new ArrayList<>()))
+                .collect(Collectors.toMap(Film::getId, film -> film));
+
+        Map<Integer, Genre> genres = genreRepository.findAll().stream()
+                .collect(Collectors.toMap(Genre::getId, genre -> genre));
+
+        List<FilmGenre> filmGenres = filmGenreRepository.findAllByFilmIds(filmsMap.keySet());
+
+        for (FilmGenre genre : filmGenres) {
+            filmsMap.get(genre.getFilmId()).getGenres().add(genres.get(genre.getGenreId()));
+        }
     }
 
     private boolean isGenresEquals(List<Genre> oldGenres, List<Genre> newGenres) {
