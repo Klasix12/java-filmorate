@@ -6,6 +6,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import ru.yandex.practicum.filmorate.validation.FilmReleaseDate;
 import ru.yandex.practicum.filmorate.validation.groups.OnCreate;
 import ru.yandex.practicum.filmorate.validation.groups.OnUpdate;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Data
 @Builder
+@EqualsAndHashCode(exclude = {"mpa", "genres"})
 public class Film {
     @NotNull(message = "", groups = {OnUpdate.class})
     private Long id;
