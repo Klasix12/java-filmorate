@@ -24,7 +24,7 @@ public class FilmRepositoryImpl extends BaseRepository<Film> implements FilmRepo
             "FROM films AS f " +
             "JOIN likes AS l ON f.id = l.film_id " +
             "JOIN mpa AS m ON f.mpa_id = m.id " +
-            "GROUP BY f.id, f.name, f.description, f.release_date, f.duration, f.mpa_id\n" +
+            "GROUP BY f.id, f.name, f.description, f.release_date, f.duration, f.mpa_id " +
             "ORDER BY user_likes DESC " +
             "LIMIT ?) AS s";
     private static final String ADD_LIKE_QUERY = "INSERT INTO likes (film_id, user_id) VALUES (?, ?)";
