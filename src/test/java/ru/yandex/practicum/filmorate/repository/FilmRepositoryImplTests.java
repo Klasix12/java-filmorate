@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class FilmRepositoryImplTests {
     private final FilmRepositoryImpl filmRepository;
     private final UserRepositoryImpl userRepository;
+    private static long testUserId = 1;
 
     @Test
     public void testFindAll() {
@@ -106,7 +107,7 @@ public class FilmRepositoryImplTests {
 
     private User createTestUser() {
         return User.builder()
-                .email("test@test.com")
+                .email("test" + testUserId++ + "@test.com")
                 .login("test")
                 .name("test")
                 .birthday(LocalDate.of(1999, 9, 9))
