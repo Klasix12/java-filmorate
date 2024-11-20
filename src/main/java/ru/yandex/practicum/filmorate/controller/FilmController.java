@@ -26,6 +26,12 @@ public class FilmController {
         return filmService.findAll();
     }
 
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Film findById(@PathVariable("id") long id) {
+        return filmService.findById(id);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Film create(@Validated(OnCreate.class) @RequestBody Film film) {
@@ -58,7 +64,7 @@ public class FilmController {
 
     @GetMapping("/popular")
     @ResponseStatus(HttpStatus.OK)
-    public Collection<Film> findPopularFilms(@RequestParam(required = false, defaultValue = "10") int count) {
+    public Collection<Film> findPopularFilms(@RequestParam(defaultValue = "10") int count) {
         log.trace("Получение популярных фильмов");
         return filmService.findPopularFilms(count);
     }

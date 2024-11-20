@@ -5,7 +5,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import java.util.Collection;
 import java.util.Optional;
 
-public interface FilmStorage {
+public interface FilmRepository {
     Collection<Film> findAll();
 
     Optional<Film> findById(long id);
@@ -14,5 +14,9 @@ public interface FilmStorage {
 
     Film update(Film newFilm);
 
-    Collection<Film> getPopularFilms(int count);
+    Collection<Film> findPopularFilms(int count);
+
+    void addLike(long filmId, long userId);
+
+    void deleteLike(long filmId, long userId);
 }

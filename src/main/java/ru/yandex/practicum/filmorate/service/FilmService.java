@@ -7,6 +7,8 @@ import java.util.Collection;
 public interface FilmService {
     Collection<Film> findAll();
 
+    Film findById(long id);
+
     Film create(Film film);
 
     Film update(Film film);
