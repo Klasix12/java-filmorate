@@ -25,7 +25,6 @@
 ### 📋 Системные требования
 
 * Java Development Kit (JDK) 11
-* PostgreSQL
 * Maven
 
 ### 🚀 Установка и запуск
